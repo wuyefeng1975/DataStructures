@@ -37,7 +37,6 @@ void test_list() {
         printf( "Not last\n" );
 
     List_dispose( &list );
-
 }
 
 void test_stack() {
