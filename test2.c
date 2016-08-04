@@ -3,6 +3,10 @@
 #include "list.h"
 #include "mem.h"
 
+#include "except.h"
+#include "assert.h"
+#include <setjmp.h>
+
 
 void test_list() {
     int i = 1;
@@ -53,9 +57,26 @@ void test_stack() {
     Stack_dispose( &stack );
 }
 
+void Test_TRY_CATCH() {
+    struct Except_T zeroExcept = { "Can not be zero" };
+    TRY
+        int i = 0;
+        int j = 0;
+        if( j == 0 )
+            RAISE( zeroExcept );
+        printf( "Hello World\n" );
+    EXCEPT(zeroExcept)
+        printf( "Shit\n");
+        Except_flag = Except_entered; 
+    END_TRY
+    printf( "Out Try catch\n");
+    
+}
+
 int main() {
     printf( "Hello World\n" );
-
+    Test_TRY_CATCH();
+    
     //test_stack();
     test_list();
 }
