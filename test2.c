@@ -15,32 +15,31 @@ void test_list() {
     int l = 4;
     
     List list = List_create();
-
-    
     List_insert( list, list, &i );
     List_insert( list, list, &j );
-    List_insert( list, list, &k );
-    Position pos = List_find( list, &i );
-    List_insert( list, pos, &l );
-    List_delete( list, &j );
-    pos = list->next;
+    Position pos = List_first( list );
+    printf( "first one value is:%d\n", *(int*)pos->element );
+    pos = List_find( list, &i );
+    List_insert( list, pos, &k );
+    if( List_isLast( pos ) ) {
+        printf( "is last one\n" );
+    } else {
+        printf( "is not last one\n" );
+    }
+
+    List_delete( list, &k );
+
+    pos = List_first( list );
     while( pos ) {
-        printf( "%d\t", *(int*)pos->element) ;
+        printf( "%d\t", *(int*)pos->element );
         pos = pos->next;
     }
-    List_makeEmpty( list );
-
-    if( List_isEmpty( list ) ) 
-        printf( "Empty\n" );
-    else
-        printf( "Not empty\n" );
     
-    if( List_isLast( list ) ) 
-        printf( "Last\n" );
-    else
-        printf( "Not last\n" );
+    printf( "\n" );
 
     List_dispose( &list );
+    if( list == NULL )
+        printf( "Point == NULL\n" );
 }
 
 void test_stack() {
@@ -74,9 +73,7 @@ void Test_TRY_CATCH() {
 }
 
 int main() {
-    printf( "Hello World\n" );
-    Test_TRY_CATCH();
-    
+    //Test_TRY_CATCH();
     //test_stack();
     test_list();
 }

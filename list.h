@@ -19,6 +19,8 @@ extern void List_delete( List list, void* element );
 extern Position List_find( List list, void* element );
 extern Position List_findPrevious( List list, void* element );
 
+extern Position List_header( List L );
+extern Position List_first( List L );
 extern int List_isEmpty( List list );
 extern int List_isLast( Position pos );
 
