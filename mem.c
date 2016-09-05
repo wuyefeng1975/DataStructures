@@ -21,6 +21,21 @@ void *Mem_alloc( long nbytes, const char *file, int line ) {
     return ptr; 
 }
 
+void *Mem_copy( void* destination, void* source, long nbytes, const char *file, int line ) {
+	assert(nbytes > 0);
+
+    void *ptr;
+	ptr = memcpy( destination, source, nbytes );
+	if (ptr == NULL) {
+        if (file == NULL)
+            RAISE(Mem_Failed);
+        else
+	        Except_raise(&Mem_Failed, file, line);
+    }
+    
+    return ptr; 
+}
+
 void *Mem_calloc( long count, long nbytes, const char *file, int line ) {
     assert(count > 0);
     assert(nbytes > 0);

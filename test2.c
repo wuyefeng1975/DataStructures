@@ -1,59 +1,51 @@
 #include <stdio.h>
-#include "stack.h"
+#include <stddef.h>
+//#include "stack.h"
 #include "list.h"
 #include "mem.h"
-
 #include "except.h"
 #include "assert.h"
-#include <setjmp.h>
+//#include "binary_tree.h"
 
-
-void test_list() {
-    int i = 1;
-    int j = 2;
-    int k = 3;
-    int l = 4;
+int int_compair( const void* elem1, const void* elem2 ) {
+    int int1 = *(int*)elem1;
+    int int2 = *(int*)elem2;
+    if( int1 < int2 )
+        return -1;
+    else if( int1 == int2 )
+        return 0;
     
-    List list = List_create();
-    List_insert( list, list, &i );
-    List_insert( list, list, &j );
-    Position pos = List_first( list );
-    printf( "first one value is:%d\n", *(int*)pos->element );
-    pos = List_find( list, &i );
-    List_insert( list, pos, &k );
-    if( List_isLast( pos ) ) {
-        printf( "is last one\n" );
-    } else {
-        printf( "is not last one\n" );
-    }
-
-    List_delete( list, &k );
-
-    pos = List_first( list );
-    while( pos ) {
-        printf( "%d\t", *(int*)pos->element );
-        pos = pos->next;
-    }
-    
-    printf( "\n" );
-
-    List_dispose( &list );
-    if( list == NULL )
-        printf( "Point == NULL\n" );
+    return 1;
 }
 
-void test_stack() {
-    int i = 1;
-    int j = 2;
-    int k = 3;
-    int l = 4;
-    int m = 5;
-    int n = 6;
-    Stack_T stack = Stack_create();
-    Stack_push( stack, &n );
-    Stack_push( stack, &l );
-    Stack_pop( stack );
-    Stack_dispose( &stack );
+void test_list() {
+    List list = List_create( sizeof(int) );
+    int i = 0;
+    int j = 1;
+    int k = 2;
+    int l = 3;
+    int m = 4;
+    NodePosition pos;
+    pos = List_insert( list, list->header, &i, NULL );
+    List_insert( list, list->header, &j, NULL );
+    
+    pos = List_insert( list, pos, &k, NULL );
+    k = 10;
+    pos = List_insert( list, pos, &k, NULL );
+    pos = List_insert( list, pos, &l, NULL );
+    List_insert( list, pos, &m, NULL );
+    
+    for( pos = list->header->next; pos != NULL; pos = pos->next )
+        printf( "%d\n", *(int*)pos->element );
+
+    pos = List_find( list, &k, &int_compair );
+    printf( "FInd:%d\n", *(int*)pos->element );
+    List_delete( list, pos );
+
+    List_dispose( &list );
+    if( list == NULL ) {
+        printf ( "NULL\n");
+    }
 }
 
 void Test_TRY_CATCH() {
@@ -72,8 +64,40 @@ void Test_TRY_CATCH() {
     
 }
 
+int compare_int( void const *a, void const *b ) {
+    if( *(int*)a > *(int*)b ) {
+        return 1;
+    } else if( *(int*)a < *(int*)b ) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+void test_binary_tree() {
+    /*
+    int j = 11;
+    int m = 9;
+    int n = 8;
+    int k = 20;
+    int i = 1;
+    SearchTree tree = NULL;
+    
+    tree = SearchTree_insert( tree, &j, &compare_int );
+    tree = SearchTree_insert( tree, &m, &compare_int );
+    tree = SearchTree_insert( tree, &n, &compare_int );
+    tree = SearchTree_insert( tree, &k, &compare_int );
+    tree = SearchTree_insert( tree, &i, &compare_int );
+    printf( "Node Count is:%d\n", SearchTree_node_count(tree) );
+    SearchTree_print( tree, 0 );
+    
+    SearchTree_makeEmpty( &tree );
+    */
+}
+
 int main() {
     //Test_TRY_CATCH();
-    //test_stack();
     test_list();
+
+    //test_binary_tree();
 }

@@ -1,82 +1,96 @@
 #include <stddef.h>
 #include "assert.h"
 #include "mem.h"
-#include "stack.h"
-#include <stdio.h>
-#include "List.h"
+#include "list.h"
 
-List List_create() {
-    Position header;
+List List_create( size_t data_size ) {
+    List list;
+    NEW( list );
+
+    NodePosition header;
     NEW( header );
     header->next = NULL;
+    list->header = header;
 
-    return header;
-}
-
-void List_dispose( List *list ) {
-    List_makeEmpty( *list );
-    Position header = List_header( *list );
-    FREE( header );
-    *list = NULL;
-}
-
-void List_makeEmpty( List list ) {
-    Position first = List_first( list );
-    for( Position next; first; first = next ) {
-        next = first->next;
-        FREE( first );
-    }
-    Position header =  List_header( list );
-    header->next = NULL;
-}
-
-void List_insert( List list, Position pos, void* element ) {
-    Position temp;
-    NEW( temp );
-    temp->element = element;
-    temp->next = pos->next;
-    pos->next = temp;
-}
-
-void List_delete( List list, void* element ) {
-    Position previous = List_findPrevious( list, element );
-    if( previous != NULL ) {
-        Position pos = previous->next;
-        previous->next = pos->next;
-        FREE( pos ); 
-    }
-}
-
-Position List_find( List list, void* element ) {
-    Position pos = List_first( list );
-    while( pos != NULL && pos->element != element ) {
-        pos = pos->next;
-    }
-    return pos;
-}
-
-Position List_findPrevious( List list, void* element ) {
-    Position pos = List_header( list );
-    while( !List_isLast( pos ) && element != pos->next->element ) {
-        pos = pos->next;
-    }
-    return pos;
-}
-
-Position List_header( List list ) {
+    list->data_size = data_size;
+    
     return list;
 }
 
-Position List_first( List list ) {
-    Position header = List_header( list );
-    return header->next;
+void List_dispose( List *list ) {
+    List_make_empty( *list );
+    FREE( (*list)->header );
+    FREE( *list );
+    *list = NULL;
 }
 
-int List_isEmpty( List list ) {
-    Position header = List_header( list );
-    return header->next == NULL;
+void List_make_empty( List list ) {
+    if( list == NULL )
+        return;
+    
+    while( list->header->next != NULL ) {
+        List_delete( list, list->header->next );
+    }
 }
 
-int List_isLast( Position pos ) {
-    return pos->next == NULL;
+NodePosition List_insert( List list, NodePosition pos, void *element, 
+                            void (*assign)(void*, const void*) ){
+    if( pos == NULL )
+        return NULL;
+    
+    NodePosition new_position;
+    NEW( new_position );
+    
+    void* ptr = ALLOC( list->data_size );
+    if( (*assign) != NULL )
+        (*assign)( ptr, element );
+    else
+        COPY( ptr, element, list->data_size );
+    new_position->element = ptr;
+    new_position->next = pos->next;
+    pos->next = new_position;
+    
+    return new_position;
+}
+
+NodePosition List_find_previous( List list, NodePosition pos ) {
+    if( list == NULL )
+        return NULL;
+
+    NodePosition previous = list->header;
+    while( previous != NULL && previous->next != pos )
+        previous = previous->next;
+    
+    return previous;
+}
+
+NodePosition List_delete( List list, NodePosition pos ) {
+    if( list == NULL )
+        return NULL;
+    if( pos == NULL )
+        return NULL;
+
+    NodePosition previous = List_find_previous( list, pos );
+    if( previous == NULL )
+        return NULL;
+    previous->next = pos->next;
+    FREE( pos->element );
+    FREE( pos );
+    
+    return previous->next;
+}
+
+NodePosition List_find( List list, void* element, int (*compair)(const void*, const void*) ) {
+    if( list == NULL )
+        return NULL;
+
+    NodePosition pos = list->header->next;
+    while( pos != NULL ) {
+        if( (*compair)( pos->element, element ) != 0 )
+            pos = pos->next;
+        else
+            break;
+    }
+
+    return pos;
 }

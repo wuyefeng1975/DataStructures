@@ -1,27 +1,27 @@
 #ifndef _LIST_H
 #define _LIST_H
 
-typedef struct Node *PtrToNode;
-typedef PtrToNode List;
-typedef PtrToNode Position;
+typedef struct ListNode *PtrToNode;
+typedef PtrToNode NodePosition;
+typedef struct List *List;
 
-struct Node
+struct ListNode
 {
     void* element;
-    Position next;
+    NodePosition next;
 };
 
-extern List List_create();
-extern void List_dispose( List *list );
-extern void List_makeEmpty( List list );
-extern void List_insert( List list, Position pos, void* element );
-extern void List_delete( List list, void* element );
-extern Position List_find( List list, void* element );
-extern Position List_findPrevious( List list, void* element );
+struct List {
+    size_t data_size;
+    NodePosition header;
+};
 
-extern Position List_header( List L );
-extern Position List_first( List L );
-extern int List_isEmpty( List list );
-extern int List_isLast( Position pos );
+extern List List_create( size_t data_size );
+extern void List_dispose( List *list );
+extern void List_make_empty( List list );
+extern NodePosition List_find_previous( List list, NodePosition pos );
+extern NodePosition List_insert( List list, NodePosition pos, void *elementvoid, void (*assign)(void*, const void*) );
+extern NodePosition List_delete( List list, NodePosition pos );
+extern NodePosition List_find( List list, void* element, int (*compair)(const void*, const void*) );
 
 #endif
