@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stddef.h>
-//#include "stack.h"
 #include "list.h"
 #include "mem.h"
 #include "except.h"
@@ -25,27 +24,27 @@ void test_list() {
     int k = 2;
     int l = 3;
     int m = 4;
-    NodePosition pos;
-    pos = List_insert( list, list->header, &i, NULL );
-    List_insert( list, list->header, &j, NULL );
-    
-    pos = List_insert( list, pos, &k, NULL );
-    k = 10;
-    pos = List_insert( list, pos, &k, NULL );
-    pos = List_insert( list, pos, &l, NULL );
-    List_insert( list, pos, &m, NULL );
+    NodePosition pos = list->header;
+    for( int i = 0; i < 10; i++ ) {
+        pos = List_insert( list, list->header, &i, NULL );
+    }
     
     for( pos = list->header->next; pos != NULL; pos = pos->next )
         printf( "%d\n", *(int*)pos->element );
-
-    pos = List_find( list, &k, &int_compair );
-    printf( "FInd:%d\n", *(int*)pos->element );
-    List_delete( list, pos );
 
     List_dispose( &list );
     if( list == NULL ) {
         printf ( "NULL\n");
     }
+}
+
+void test_stack() {
+    int i = 10;
+    List stack = List_create( sizeof(int) );
+    List_push_front( stack, &i, NULL );    
+    printf( "first is: %d\n", *(int*)List_first( stack ) );
+    List_pop_front( stack );
+    List_dispose( &stack );
 }
 
 void Test_TRY_CATCH() {
@@ -97,7 +96,7 @@ void test_binary_tree() {
 
 int main() {
     //Test_TRY_CATCH();
-    test_list();
-
+    //test_list();
+    test_stack();
     //test_binary_tree();
 }

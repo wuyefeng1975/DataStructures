@@ -18,6 +18,8 @@ List List_create( size_t data_size ) {
 }
 
 void List_dispose( List *list ) {
+    assert( *list );
+    
     List_make_empty( *list );
     FREE( (*list)->header );
     FREE( *list );
@@ -25,8 +27,7 @@ void List_dispose( List *list ) {
 }
 
 void List_make_empty( List list ) {
-    if( list == NULL )
-        return;
+    assert( list );
     
     while( list->header->next != NULL ) {
         List_delete( list, list->header->next );
@@ -35,8 +36,8 @@ void List_make_empty( List list ) {
 
 NodePosition List_insert( List list, NodePosition pos, void *element, 
                             void (*assign)(void*, const void*) ){
-    if( pos == NULL )
-        return NULL;
+    assert( list );
+    assert( pos );
     
     NodePosition new_position;
     NEW( new_position );
@@ -54,8 +55,7 @@ NodePosition List_insert( List list, NodePosition pos, void *element,
 }
 
 NodePosition List_find_previous( List list, NodePosition pos ) {
-    if( list == NULL )
-        return NULL;
+    assert( list );
 
     NodePosition previous = list->header;
     while( previous != NULL && previous->next != pos )
@@ -65,10 +65,8 @@ NodePosition List_find_previous( List list, NodePosition pos ) {
 }
 
 NodePosition List_delete( List list, NodePosition pos ) {
-    if( list == NULL )
-        return NULL;
-    if( pos == NULL )
-        return NULL;
+    assert( list );
+    assert( pos );
 
     NodePosition previous = List_find_previous( list, pos );
     if( previous == NULL )
@@ -81,8 +79,7 @@ NodePosition List_delete( List list, NodePosition pos ) {
 }
 
 NodePosition List_find( List list, void* element, int (*compair)(const void*, const void*) ) {
-    if( list == NULL )
-        return NULL;
+    assert( list );
 
     NodePosition pos = list->header->next;
     while( pos != NULL ) {
@@ -93,4 +90,25 @@ NodePosition List_find( List list, void* element, int (*compair)(const void*, co
     }
 
     return pos;
+}
+
+void List_push_front( List list, void* element, void (*assign)(void*, const void*) ) {
+    assert( list );
+
+    List_insert( list, list->header, element, (*assign) );
+}
+
+void List_pop_front( List list ) {
+    assert( list );
+    
+    List_delete( list, list->header->next );
+}
+
+void* List_first( List list ) {
+    assert( list );
+
+    if( list->header->next == NULL )
+        return NULL;
+
+    return list->header->next->element;
 }
