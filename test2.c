@@ -4,9 +4,9 @@
 #include "mem.h"
 #include "except.h"
 #include "assert.h"
-//#include "binary_tree.h"
+#include "binary_tree.h"
 
-int int_compair( const void* elem1, const void* elem2 ) {
+int int_compare( const void* elem1, const void* elem2 ) {
     int int1 = *(int*)elem1;
     int int2 = *(int*)elem2;
     if( int1 < int2 )
@@ -26,12 +26,15 @@ void test_list() {
     int m = 4;
     NodePosition pos = list->header;
     for( int i = 0; i < 10; i++ ) {
-        pos = List_insert( list, list->header, &i, NULL );
+        pos = List_insert( list, pos, &i, NULL );
+    }
+    List_push_back( list, &k, NULL );
+    List_push_back( list, &k, NULL );
+    pos = list->header;
+    while( ( pos = pos->next ) != NULL ) {
+        printf( "%d\n", *(int*)pos->element );
     }
     
-    for( pos = list->header->next; pos != NULL; pos = pos->next )
-        printf( "%d\n", *(int*)pos->element );
-
     List_dispose( &list );
     if( list == NULL ) {
         printf ( "NULL\n");
@@ -63,18 +66,8 @@ void Test_TRY_CATCH() {
     
 }
 
-int compare_int( void const *a, void const *b ) {
-    if( *(int*)a > *(int*)b ) {
-        return 1;
-    } else if( *(int*)a < *(int*)b ) {
-        return -1;
-    } else {
-        return 0;
-    }
-}
-
 void test_binary_tree() {
-    /*
+    
     int j = 11;
     int m = 9;
     int n = 8;
@@ -82,21 +75,19 @@ void test_binary_tree() {
     int i = 1;
     SearchTree tree = NULL;
     
-    tree = SearchTree_insert( tree, &j, &compare_int );
-    tree = SearchTree_insert( tree, &m, &compare_int );
-    tree = SearchTree_insert( tree, &n, &compare_int );
-    tree = SearchTree_insert( tree, &k, &compare_int );
-    tree = SearchTree_insert( tree, &i, &compare_int );
-    printf( "Node Count is:%d\n", SearchTree_node_count(tree) );
-    SearchTree_print( tree, 0 );
+    tree = SearchTree_insert( tree, &j, &int_compare );
+    tree = SearchTree_insert( tree, &m, &int_compare );
+    tree = SearchTree_insert( tree, &n, &int_compare );
+    tree = SearchTree_insert( tree, &k, &int_compare );
+    tree = SearchTree_insert( tree, &i, &int_compare );
     
-    SearchTree_makeEmpty( &tree );
-    */
+    BinaryTree_print( tree );
+    BinaryTree_make_empty( &tree );
 }
 
 int main() {
     //Test_TRY_CATCH();
     //test_list();
-    test_stack();
-    //test_binary_tree();
+    //test_stack();
+    test_binary_tree();
 }
