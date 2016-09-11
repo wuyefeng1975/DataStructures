@@ -3,7 +3,9 @@
 #include "mem.h"
 #include "list.h"
 
-List List_create( size_t data_size ) {
+List List_create( size_t data_size, 
+                    void (*assign)(void*, const void*),
+                    int (*compare)(const void*, const void*) ) {
     List list;
     NEW( list );
 
@@ -13,7 +15,9 @@ List List_create( size_t data_size ) {
     list->header = header;
     list->size = 0;
     list->data_size = data_size;
-    
+    list->assign_func = assign;
+    list->compare_func = compare;
+
     return list;
 }
 
@@ -34,8 +38,7 @@ void List_make_empty( List list ) {
     }
 }
 
-NodePosition List_insert( List list, NodePosition pos, void *element, 
-                            void (*assign)(void*, const void*) ){
+NodePosition List_insert( List list, NodePosition pos, void *element ){
     assert( list );
     assert( pos );
     
@@ -43,8 +46,8 @@ NodePosition List_insert( List list, NodePosition pos, void *element,
     NEW( new_position );
     
     void* ptr = ALLOC( list->data_size );
-    if( (*assign) != NULL )
-        (*assign)( ptr, element );
+    if( list->assign_func != NULL )
+        (*list->assign_func)( ptr, element );
     else
         COPY( ptr, element, list->data_size );
     new_position->element = ptr;
@@ -79,12 +82,13 @@ NodePosition List_delete( List list, NodePosition pos ) {
     return previous->next;
 }
 
-NodePosition List_find( List list, void* element, int (*compare)(const void*, const void*) ) {
+NodePosition List_find( List list, void* element ) {
     assert( list );
+    assert( list->compare_func );
 
     NodePosition pos = list->header->next;
     while( pos != NULL ) {
-        if( (*compare)( pos->element, element ) == 0 )
+        if( (*list->compare_func)( pos->element, element ) == 0 )
             break;
         pos = pos->next;
     }
@@ -92,10 +96,10 @@ NodePosition List_find( List list, void* element, int (*compare)(const void*, co
     return pos;
 }
 
-void List_push_front( List list, void* element, void (*assign)(void*, const void*) ) {
+void List_push_front( List list, void* element ) {
     assert( list );
 
-    List_insert( list, list->header, element, (*assign) );
+    List_insert( list, list->header, element );
 }
 
 void List_pop_front( List list ) {
@@ -104,14 +108,14 @@ void List_pop_front( List list ) {
     List_delete( list, list->header->next );
 }
 
-void List_push_back( List list, void* element, void (*assign)(void*, const void*) ) {
+void List_push_back( List list, void* element ) {
     assert( list );
     
     NodePosition pos = list->header;
     while( pos->next != NULL ) {
         pos = pos->next;
     }    
-    List_insert( list, pos, element, (*assign) );
+    List_insert( list, pos, element );
 }
 
 void List_pop_back( List list ) {

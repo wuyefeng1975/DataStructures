@@ -17,19 +17,19 @@ int int_compare( const void* elem1, const void* elem2 ) {
     return 1;
 }
 
+void int_element_print( void* element ) {
+    printf( "%d", *(int*)element );
+}
+
 void test_list() {
-    List list = List_create( sizeof(int) );
-    int i = 0;
-    int j = 1;
+    List list = List_create( sizeof(int), NULL, &int_compare );
     int k = 2;
-    int l = 3;
-    int m = 4;
     NodePosition pos = list->header;
     for( int i = 0; i < 10; i++ ) {
-        pos = List_insert( list, pos, &i, NULL );
+        pos = List_insert( list, pos, &i );
     }
-    List_push_back( list, &k, NULL );
-    List_push_back( list, &k, NULL );
+    List_push_back( list, &k );
+    List_push_back( list, &k );
     pos = list->header;
     while( ( pos = pos->next ) != NULL ) {
         printf( "%d\n", *(int*)pos->element );
@@ -43,8 +43,10 @@ void test_list() {
 
 void test_stack() {
     int i = 10;
-    List stack = List_create( sizeof(int) );
-    List_push_front( stack, &i, NULL );    
+    List stack = List_create( sizeof(int), NULL, &int_compare );
+    List_push_front( stack, &i );
+    i = 9;
+    List_push_front( stack, &i );
     printf( "first is: %d\n", *(int*)List_first( stack ) );
     List_pop_front( stack );
     List_dispose( &stack );
@@ -53,36 +55,70 @@ void test_stack() {
 void Test_TRY_CATCH() {
     struct Except_T zeroExcept = { "Can not be zero" };
     TRY
-        int i = 0;
-        int j = 0;
-        if( j == 0 )
-            RAISE( zeroExcept );
-        printf( "Hello World\n" );
+    int i = 0;
+    int j = 0;
+    if( j == 0 )
+        RAISE( zeroExcept );
+    printf( "Hello World\n" );
     EXCEPT(zeroExcept)
-        printf( "Shit\n");
-        Except_flag = Except_entered; 
+    printf( "Shit\n");
+    Except_flag = Except_entered;
     END_TRY
     printf( "Out Try catch\n");
     
 }
 
 void test_binary_tree() {
+    BinaryTree tree = BinaryTree_create( sizeof( int ), NULL, &int_compare );
+    tree->print_element_func = &int_element_print;
     
-    int j = 11;
+    int i = 3;
+    int j = 1;
+    int k = 4;
+    int l = 6;
     int m = 9;
-    int n = 8;
-    int k = 20;
-    int i = 1;
-    SearchTree tree = NULL;
+    int n = 2;
+    int o = 5;
+    int p = 7;
+
+    SearchTree_insert( tree, &i );
+    SearchTree_insert( tree, &j );
+    SearchTree_insert( tree, &k );
+    SearchTree_insert( tree, &l );
+    SearchTree_insert( tree, &m );
+    SearchTree_insert( tree, &n );
+    SearchTree_insert( tree, &o );
+    SearchTree_insert( tree, &p );
     
-    tree = SearchTree_insert( tree, &j, &int_compare );
-    tree = SearchTree_insert( tree, &m, &int_compare );
-    tree = SearchTree_insert( tree, &n, &int_compare );
-    tree = SearchTree_insert( tree, &k, &int_compare );
-    tree = SearchTree_insert( tree, &i, &int_compare );
-    
+    printf( "tree height is:%d\n", BinaryTree_height( tree->root ) );
+    printf( "tree node count is:%d\n", BinaryTree_node_count( tree->root ) );
     BinaryTree_print( tree );
-    BinaryTree_make_empty( &tree );
+    
+    int tt = 3;
+    BinaryNode node = SearchTree_find_min( tree->root );
+    node = SearchTree_find( tree, &tt );
+    if( node != NULL )
+        (*tree->print_element_func)(node->element);
+    else
+        printf( "Not Found!" );
+    printf("\n");
+    
+    SearchTree_delete( tree, &tt );
+    BinaryTree_print( tree );
+    tt = 4;
+    SearchTree_delete( tree, &tt );
+    BinaryTree_print( tree );
+    tt = 5;
+    SearchTree_delete( tree, &tt );
+    BinaryTree_print( tree );
+    tt = 6;
+    SearchTree_delete( tree, &tt );
+    BinaryTree_print( tree );
+    tt = 7;
+    SearchTree_delete( tree, &tt );
+    BinaryTree_print( tree );
+
+    BinaryTree_dispose( &tree );
 }
 
 int main() {
