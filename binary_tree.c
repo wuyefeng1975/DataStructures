@@ -16,7 +16,7 @@ BinaryTree BinaryTree_create( size_t data_size,
     tree->assign_func = assign;
     tree->compare_func = compare;
     tree->print_element_func = NULL;
-
+    
     return tree;
 }
 
@@ -26,7 +26,7 @@ void BinaryTree_dispose( BinaryTree *tree ) {
     *tree = NULL;
 }
 
-void BinaryTree_make_empty( BinaryNode *node ) {
+void BinaryTree_make_empty( BinaryTreeNode *node ) {
     if( (*node) == NULL )
         return;
     
@@ -39,7 +39,7 @@ void BinaryTree_make_empty( BinaryNode *node ) {
 }
 
 
-BinaryNode binary_search_tree_insert( BinaryNode *node, void* element, size_t data_size, 
+BinaryTreeNode binary_search_tree_insert( BinaryTreeNode *node, void* element, size_t data_size, 
                             void (*assign)(void*, const void*), 
                             int (*compare)( void const *, void const * ) ) {
     if( (*node) == NULL ) {
@@ -68,7 +68,7 @@ void SearchTree_insert( BinaryTree tree, void* element ) {
                                 tree->assign_func, tree->compare_func ) ;
 }
 
-int get_node_count( BinaryNode node, int count ) {
+int get_node_count( BinaryTreeNode node, int count ) {
     if( node == NULL )
         return count;
     
@@ -79,11 +79,11 @@ int get_node_count( BinaryNode node, int count ) {
     return count;
 }
 
-int BinaryTree_node_count( BinaryNode node ) {
+int BinaryTree_node_count( BinaryTreeNode node ) {
     return get_node_count( node, 0 );
 }
 
-int get_tree_height( BinaryNode node, int height ) {
+int get_tree_height( BinaryTreeNode node, int height ) {
     if( node == NULL )
         return height;
 
@@ -91,15 +91,15 @@ int get_tree_height( BinaryNode node, int height ) {
     int leftHeight = get_tree_height( node->left, height );
     int rightHeight = get_tree_height( node->right, height );
     height = rightHeight > leftHeight ? rightHeight : leftHeight;
-     
+    
     return height;
 }
 
-int BinaryTree_height( BinaryNode node ) { 
+int BinaryTree_height( BinaryTreeNode node ) { 
     return get_tree_height( node, 0 );
 }
 
-void get_same_level_node( BinaryNode node, int height, List* listArray ) {
+void get_same_level_node( BinaryTreeNode node, int height, List* listArray ) {
     if( node == NULL )
         return;    
     
@@ -110,7 +110,7 @@ void get_same_level_node( BinaryNode node, int height, List* listArray ) {
     get_same_level_node( node->right, height + 1, listArray );
 }
 
-void get_node_position( BinaryNode node, BinaryNode* positions, int *index ){
+void get_node_position( BinaryTreeNode node, BinaryTreeNode* positions, int *index ){
     if( node == NULL )
         return;
     
@@ -121,7 +121,7 @@ void get_node_position( BinaryNode node, BinaryNode* positions, int *index ){
     
 }
 
-int find_index( void* element, BinaryNode* positions, int count ) {
+int find_index( void* element, BinaryTreeNode* positions, int count ) {
     for( int i = 0; i < count; i++ ) {
         if( *(int*)(*(positions + i))->element == *(int*)element )
             return i;
@@ -131,7 +131,7 @@ int find_index( void* element, BinaryNode* positions, int count ) {
 }
 
 void BinaryTree_print( BinaryTree tree ) {
-    BinaryNode node = tree->root;
+    BinaryTreeNode node = tree->root;
 
     int height = BinaryTree_height( node );
     List listArray[height];
@@ -141,7 +141,7 @@ void BinaryTree_print( BinaryTree tree ) {
     get_same_level_node( node, 0, listArray );
     
     int count = BinaryTree_node_count( node );
-    BinaryNode positions[count];
+    BinaryTreeNode positions[count];
     int index = 0;
     get_node_position( node, positions, &index );
 
@@ -165,7 +165,7 @@ void BinaryTree_print( BinaryTree tree ) {
     } 
 }
 
-BinaryNode SearchTree_find_min( BinaryNode node ) {
+BinaryTreeNode SearchTree_find_min( BinaryTreeNode node ) {
     if( node == NULL )
         return NULL;
     while( node->left != NULL )
@@ -173,7 +173,7 @@ BinaryNode SearchTree_find_min( BinaryNode node ) {
     return node;
 }
 
-BinaryNode SearchTree_find_max( BinaryNode node ) {
+BinaryTreeNode SearchTree_find_max( BinaryTreeNode node ) {
     if( node == NULL )
         return NULL;
     while( node->right != NULL )
@@ -181,7 +181,7 @@ BinaryNode SearchTree_find_max( BinaryNode node ) {
     return node;
 }
 
-BinaryNode* search_tree_find( BinaryNode *node, void *element, 
+BinaryTreeNode* search_tree_find( BinaryTreeNode *node, void *element, 
                                 int (*compare)( void const *, void const * ) ) {
     assert(compare);
 
@@ -198,14 +198,14 @@ BinaryNode* search_tree_find( BinaryNode *node, void *element,
     }
 }
 
-BinaryNode SearchTree_find( BinaryTree tree, void *element ) {
+BinaryTreeNode SearchTree_find( BinaryTree tree, void *element ) {
     assert( tree->compare_func );
 
     return *search_tree_find( &tree->root, element, tree->compare_func );
 }
 
 
-BinaryNode* search_tree_delete( BinaryNode *node, void *element, size_t data_size, 
+BinaryTreeNode* search_tree_delete( BinaryTreeNode *node, void *element, size_t data_size, 
                                 int (*compare)( void const *, void const * ), 
                                 void (*assign)(void*, const void*) ) {
     assert( compare );
@@ -213,16 +213,18 @@ BinaryNode* search_tree_delete( BinaryNode *node, void *element, size_t data_siz
     if( *node == NULL )
         return NULL;
 
-    BinaryNode *find_node = search_tree_find( node, element, compare );
+    BinaryTreeNode *find_node = search_tree_find( node, element, compare );
     if( (*find_node)->left != NULL && (*find_node)->right != NULL ) {
-        BinaryNode min_node = SearchTree_find_min( (*find_node)->right );
+        BinaryTreeNode min_node = SearchTree_find_min( (*find_node)->right );
         if( (*assign) != NULL )
             (*assign)( (*find_node)->element, min_node->element );
         else
             COPY( (*find_node)->element, min_node->element, data_size );
-        return search_tree_delete( &(*find_node)->right, min_node->element, data_size, compare, assign );
+
+        return search_tree_delete( &(*find_node)->right, min_node->element, data_size, 
+                                    compare, assign );
     } else {
-        BinaryNode temp_node = *find_node;
+        BinaryTreeNode temp_node = *find_node;
         if( (*find_node)->left == NULL )
             *find_node = (*find_node)->right;
         else if( (*find_node)->right == NULL )
@@ -235,7 +237,163 @@ BinaryNode* search_tree_delete( BinaryNode *node, void *element, size_t data_siz
     return find_node;
 }
 
-BinaryNode SearchTree_delete( BinaryTree tree, void *element ) {
+BinaryTreeNode SearchTree_delete( BinaryTree tree, void *element ) {
     return *search_tree_delete( &tree->root, element, tree->data_size, 
                                 tree->compare_func, tree->assign_func );
+}
+
+
+int AvlTree_height( BinaryTreeNode node ) {
+    if( node == NULL )
+        return -1;
+    return node->height;
+}
+
+int Max( int value_1, int value_2 ) {
+    return value_1 > value_2 ? value_1 : value_2;  
+}
+
+static BinaryTreeNode SingleRotateWithLeft( BinaryTreeNode root ) {
+    BinaryTreeNode new_root = root->left;
+    root->left = new_root->right;
+    new_root->right = root;
+
+    root->height = Max( AvlTree_height( root->left ), AvlTree_height( root->right ) ) + 1;
+    new_root->height = Max( AvlTree_height( new_root->left ), AvlTree_height( new_root->right ) ) + 1;
+    
+    return new_root;
+}
+
+static BinaryTreeNode SingleRotateWithRight( BinaryTreeNode root ) {
+    BinaryTreeNode new_root = root->right;
+    root->right = new_root->left;
+    new_root->left = root;
+    
+    root->height = Max( AvlTree_height( root->left ), AvlTree_height( root->right ) ) + 1;
+    new_root->height = Max( AvlTree_height( new_root->left ), AvlTree_height( new_root->right ) ) + 1;
+    
+    return new_root;
+}
+
+static BinaryTreeNode DoubleRotateWithLeft( BinaryTreeNode root ) {
+    root->left = SingleRotateWithRight( root->left );
+    return SingleRotateWithLeft( root );
+}
+
+static BinaryTreeNode DoubleRotateWithRight( BinaryTreeNode root ) {
+    root->right = SingleRotateWithLeft( root->right );
+    return SingleRotateWithRight( root );
+}
+
+BinaryTreeNode avl_tree_insert( BinaryTreeNode *node, void* element, size_t data_size, 
+                                void (*assign)(void*, const void*), 
+                                int (*compare)( void const *, void const * ) ) {
+    if( *node == NULL ) {
+        NEW( *node );
+        void* ptr = ALLOC( data_size );
+        if( (*assign) != NULL )
+            (*assign)( ptr, element );
+        else
+            COPY( ptr, element, data_size );
+        (*node)->element = ptr;
+        (*node)->left = (*node)->right = NULL;
+        (*node)->height = 0;
+    } else {
+        int result = (*compare)( element, (*node)->element );
+        if( result > 0 ) {
+            avl_tree_insert( &(*node)->right, element, data_size, (*assign), (*compare) );
+            if( AvlTree_height( (*node)->right ) - AvlTree_height( (*node)->left ) == 2 ) {
+                if( (*compare)( element, (*node)->right->element ) > 0 )
+                    *node = SingleRotateWithRight( *node );
+                else
+                    *node = DoubleRotateWithRight( *node );
+            }
+        } else if( result < 0 ) {
+            avl_tree_insert( &(*node)->left, element, data_size, (*assign), (*compare) );
+            if( AvlTree_height( (*node)->left ) - AvlTree_height( (*node)->right ) == 2 ) {
+                if( (*compare)( element, (*node)->left->element ) < 0 )
+                    *node = SingleRotateWithLeft( *node );
+                else
+                    *node = DoubleRotateWithLeft( *node );
+            }
+        }
+    } 
+
+    (*node)->height = Max( AvlTree_height( (*node)->right ), AvlTree_height( (*node)->left ) ) + 1;
+
+    return *node;
+}
+
+BinaryTreeNode AvlTree_insert( BinaryTree tree, void* element ) {
+    return avl_tree_insert( &tree->root, element, tree->data_size,
+                            tree->assign_func, tree->compare_func );
+}
+
+int avl_tree_delete( BinaryTreeNode *node, void* element, size_t data_size, 
+                                int (*compare)( void const *, void const * ), 
+                                void (*assign)(void*, const void*) ) {
+    if( *node == NULL )
+        return 0;
+    
+    int deleted = 0;
+    int result = (*compare)( element, (*node)->element );
+    if( result > 0 ) {
+        deleted = avl_tree_delete( &(*node)->right, element, data_size,
+                                    (*compare), (*assign) );
+        if( AvlTree_height( (*node)->left ) - AvlTree_height( (*node)->right ) == 2 ) {
+            if( AvlTree_height( (*node)->left->left ) >= AvlTree_height( (*node)->left->right ) ) {
+                *node = SingleRotateWithLeft( *node );
+            } else {
+                *node = DoubleRotateWithLeft( *node );
+            }
+        }
+    } else if( result < 0 ){
+        deleted = avl_tree_delete( &(*node)->left, element, data_size,
+                                    (*compare), (*assign) );
+        if( AvlTree_height( (*node)->right ) - AvlTree_height( (*node)->left ) == 2 ) {
+            if( AvlTree_height( (*node)->right->left ) <= AvlTree_height( (*node)->right->right ) ) {
+                *node = SingleRotateWithRight( *node );
+            } else {
+                *node = DoubleRotateWithRight( *node );
+            }
+        }
+    } else {
+        if( (*node)->left != NULL && (*node)->right != NULL ) {
+            BinaryTreeNode min_node = SearchTree_find_min( (*node)->right );
+            if( (*assign) != NULL ) {
+                (*assign)( (*node)->element, min_node->element );
+            } else {
+                COPY( (*node)->element, min_node->element, data_size );
+            }
+            deleted = avl_tree_delete( &(*node)->right, min_node->element, data_size,
+                                        (*compare), (*assign) );
+            if( AvlTree_height( (*node)->left ) - AvlTree_height( (*node)->right ) == 2 ) {
+                if( AvlTree_height( (*node)->left->left ) >= AvlTree_height( (*node)->left->right ) ) {
+                    *node = SingleRotateWithLeft( *node );
+                } else {
+                    *node = DoubleRotateWithLeft( *node );
+                }
+            }
+        } else {
+            BinaryTreeNode temp_node = *node;
+            if( (*node)->left == NULL ) {
+                *node = (*node)->right;
+            } else if( (*node)->right == NULL ) {
+                *node = (*node)->left;
+            }
+            FREE(temp_node->element);
+            FREE(temp_node);
+
+            deleted = 1;
+        }
+    }
+    if( *node != NULL )
+        (*node)->height = Max( AvlTree_height( (*node)->right ), AvlTree_height( (*node)->left ) ) + 1;
+
+    return deleted;   
+}
+
+int AvlTree_delete( BinaryTree tree, void* element ) {
+    return avl_tree_delete( &tree->root, element, tree->data_size,
+                            tree->compare_func, tree->assign_func );
 }
