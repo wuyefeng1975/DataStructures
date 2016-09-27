@@ -28,6 +28,7 @@ extern void BinaryTree_make_empty( BinaryTreeNode *node );
 extern void BinaryTree_dispose( BinaryTree *tree );
 
 extern void SearchTree_insert( BinaryTree tree, void* element );
+extern BinaryTreeNode SearchTree_delete( BinaryTree tree, void *element );
 
 extern int BinaryTree_height( BinaryTreeNode node );
 extern int BinaryTree_node_count( BinaryTreeNode node );
@@ -37,8 +38,6 @@ extern void BinaryTree_print( BinaryTree tree );
 extern BinaryTreeNode SearchTree_find_min( BinaryTreeNode node );
 extern BinaryTreeNode SearchTree_find_max( BinaryTreeNode node );
 extern BinaryTreeNode SearchTree_find( BinaryTree tree, void *element );
-
-extern BinaryTreeNode SearchTree_delete( BinaryTree tree, void *element );
 
 extern int AvlTree_height( BinaryTreeNode node );
 extern BinaryTreeNode AvlTree_insert( BinaryTree tree, void* element );
