@@ -17,10 +17,7 @@ void int_element_print( void* element ) {
     printf( "%d", *(int*)element );
 }
 
-void Exercise_04_09()
-{
-    printf( "<E-04-09>\n" );
-
+BinaryTree create_binary_tree() {
     BinaryTree tree = BinaryTree_create( sizeof( int ), NULL, &int_compare );
     tree->print_element_func = &int_element_print;
     
@@ -41,14 +38,65 @@ void Exercise_04_09()
     SearchTree_insert( tree, &n );
     SearchTree_insert( tree, &o );
     SearchTree_insert( tree, &p );
+    
+    return tree;
+}
+
+void Exercise_04_09()
+{
+    printf( "<E-04-09>\n" );
+
+    BinaryTree tree = create_binary_tree();
     BinaryTree_print( tree );
 
+    int i = 3;
     SearchTree_delete( tree, &i );
     BinaryTree_print( tree );
 
     BinaryTree_dispose( &tree );
     
     printf( "</E-04-09>\n" );
+}
+
+int get_binary_tree_node_count( BinaryTreeNode node ) {
+    if( node == NULL )
+        return 0;
+    
+    return 1 + get_binary_tree_node_count( node->left ) + 
+            get_binary_tree_node_count( node->right );
+}
+
+int get_binary_tree_leave_count( BinaryTreeNode node ) {
+    if( node == NULL )
+        return 0;
+    if( node->left == NULL && node->right == NULL ) 
+        return 1;
+    return get_binary_tree_leave_count( node->left ) + 
+            get_binary_tree_leave_count( node->right );
+}
+
+int get_binary_tree_full_node_count( BinaryTreeNode node ) {
+    if( node == NULL )
+        return 0;
+
+    return (int)(node->left != NULL && node->right != NULL ? 1 : 0) + 
+            get_binary_tree_full_node_count( node->right ) +
+            get_binary_tree_full_node_count( node->left );
+}
+
+void Exercise_04_28()
+{
+    printf( "<E-04-28>\n" );
+
+    BinaryTree tree = create_binary_tree();
+    BinaryTree_print( tree );
+    printf( "Node count is: %d\n", get_binary_tree_node_count( tree->root ) );
+    printf( "Leaf count is: %d\n", get_binary_tree_leave_count( tree->root ) );
+    printf( "Full node count is: %d\n", get_binary_tree_full_node_count( tree->root ) );
+    
+    BinaryTree_dispose( &tree );
+    
+    printf( "</E-04-28>\n" );
 }
 
 int check_tree_samilarity( BinaryTreeNode node1, BinaryTreeNode node2 ) {
@@ -100,6 +148,7 @@ void Exercise_04_41()
 int main()
 {
     Exercise_04_09();
+    Exercise_04_28();
     Exercise_04_41();
 
     return 0;

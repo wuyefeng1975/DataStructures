@@ -68,19 +68,12 @@ void SearchTree_insert( BinaryTree tree, void* element ) {
                                 tree->assign_func, tree->compare_func ) ;
 }
 
-int get_node_count( BinaryTreeNode node, int count ) {
-    if( node == NULL )
-        return count;
-    
-    count++;
-    count = get_node_count( node->left, count );
-    count = get_node_count( node->right, count );
-    
-    return count;
-}
-
 int BinaryTree_node_count( BinaryTreeNode node ) {
-    return get_node_count( node, 0 );
+    if( node == NULL )
+        return 0;
+    
+    return 1 + BinaryTree_node_count( node->left ) + 
+            BinaryTree_node_count( node->right );
 }
 
 int get_tree_height( BinaryTreeNode node, int height ) {
