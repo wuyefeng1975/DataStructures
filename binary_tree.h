@@ -27,6 +27,7 @@ extern BinaryTree BinaryTree_create( size_t data_size,
 extern void BinaryTree_make_empty( BinaryTreeNode *node );
 extern void BinaryTree_dispose( BinaryTree *tree );
 
+extern BinaryTreeNode BinaryTree_create_node( BinaryTree tree, void* element );
 extern void SearchTree_insert( BinaryTree tree, void* element );
 extern BinaryTreeNode SearchTree_delete( BinaryTree tree, void *element );
 

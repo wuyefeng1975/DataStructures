@@ -68,6 +68,21 @@ void SearchTree_insert( BinaryTree tree, void* element ) {
                                 tree->assign_func, tree->compare_func ) ;
 }
 
+BinaryTreeNode BinaryTree_create_node( BinaryTree tree, void* element ) {
+    BinaryTreeNode node;
+    NEW(node);
+    
+    void* ptr = ALLOC( tree->data_size );
+    if( *tree->assign_func != NULL )
+        (*tree->assign_func)( ptr, element );
+    else
+        COPY( ptr, element, tree->data_size );
+    node->element = ptr;
+    node->left = node->right = NULL;
+
+    return node;
+}
+
 int BinaryTree_node_count( BinaryTreeNode node ) {
     if( node == NULL )
         return 0;

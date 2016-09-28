@@ -1,6 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "binary_tree.h"
-
 
 int int_compare( const void* elem1, const void* elem2 ) {
     int int1 = *(int*)elem1;
@@ -99,6 +99,70 @@ void Exercise_04_28()
     printf( "</E-04-28>\n" );
 }
 
+int generate_random(int min, int max)
+{
+    if (min <= 0 || max <= 0 || (min > max) )
+        return rand();
+    if( min == max )
+        return min;
+
+    return min + rand() % ( max - min + 1);
+}
+
+void generate_rand_binary_search_tree( int min, int max, BinaryTree tree, BinaryTreeNode *node ) {
+    if( min > max )
+        return;
+        
+    int rand_number = generate_random(min, max);
+    *node = BinaryTree_create_node( tree, &rand_number );
+    
+    generate_rand_binary_search_tree( rand_number + 1, max, tree, &(*node)->right );
+    generate_rand_binary_search_tree( min, rand_number - 1, tree, &(*node)->left );
+}
+
+void Exercise_04_29()
+{
+    printf( "<E-04-29>\n" );
+
+    BinaryTree tree = BinaryTree_create( sizeof( int ), NULL, &int_compare );
+    tree->print_element_func = &int_element_print;
+    
+    generate_rand_binary_search_tree( 11, 19, tree, &tree->root );
+    BinaryTree_print( tree );
+    BinaryTree_dispose( &tree );
+    
+    printf( "</E-04-29>\n" );
+}
+
+int my_power( int x, int n ) {
+    if( n == 0 )
+        return 1;
+    if( n == 1 )
+        return x;
+    
+    if( n % 2 == 1 )
+        return my_power( x * x, n / 2 ) * x;
+    else
+        return my_power( x * x, n / 2 );
+}
+
+void Exercise_04_31()
+{
+    printf( "<E-04-31>\n" );
+    
+    BinaryTree tree = BinaryTree_create( sizeof( int ), NULL, &int_compare );
+    tree->print_element_func = &int_element_print;
+    int height = 3;
+    int max = my_power( 2, height + 1 ) - 1;
+    for( int i = 1; i <= max; i++ ) 
+        AvlTree_insert( tree, &i );
+    
+    BinaryTree_print( tree );
+    BinaryTree_dispose( &tree );
+    
+    printf( "</E-04-31>\n" );
+}
+
 int check_tree_samilarity( BinaryTreeNode node1, BinaryTreeNode node2 ) {
     if( node1 == NULL || node2 == NULL ) 
         return node1 == NULL && node2 == NULL;;
@@ -149,6 +213,8 @@ int main()
 {
     Exercise_04_09();
     Exercise_04_28();
+    Exercise_04_29();
+    Exercise_04_31();
     Exercise_04_41();
 
     return 0;
