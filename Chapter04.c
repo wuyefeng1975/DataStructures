@@ -134,6 +134,35 @@ void Exercise_04_29()
     printf( "</E-04-29>\n" );
 }
 
+
+int generate_random_avl_tree( BinaryTree tree, BinaryTreeNode *node, int height, int init_value ){
+
+    if( height < 0 ) {
+        *node = NULL;
+        return init_value;
+    }
+
+    int i = 1;
+    *node = BinaryTree_create_node( tree, &i );
+    i = generate_random_avl_tree( tree, &(*node)->left, height - 1, init_value );
+    BinaryTree_assign_node_value( tree, *node, &i );
+    i = generate_random_avl_tree( tree, &(*node)->right, height - 2, i + 1 );
+    return i;
+}
+
+void Exercise_04_30()
+{
+    printf( "<E-04-30>\n" );
+
+    BinaryTree tree = BinaryTree_create( sizeof( int ), NULL, &int_compare );
+    tree->print_element_func = &int_element_print;
+    generate_random_avl_tree( tree, &tree->root, 5, 1 );
+    BinaryTree_print( tree );
+    BinaryTree_dispose( &tree );
+    
+    printf( "</E-04-30>\n" );
+}
+
 int my_power( int x, int n ) {
     if( n == 0 )
         return 1;
@@ -214,6 +243,7 @@ int main()
     Exercise_04_09();
     Exercise_04_28();
     Exercise_04_29();
+    Exercise_04_30();
     Exercise_04_31();
     Exercise_04_41();
 

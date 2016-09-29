@@ -83,6 +83,15 @@ BinaryTreeNode BinaryTree_create_node( BinaryTree tree, void* element ) {
     return node;
 }
 
+void BinaryTree_assign_node_value( BinaryTree tree, 
+                                    BinaryTreeNode node, 
+                                    void* element ) {
+    if( *tree->assign_func != NULL )
+        (*tree->assign_func)( node->element, element );
+    else
+        COPY( node->element, element, tree->data_size );
+}
+
 int BinaryTree_node_count( BinaryTreeNode node ) {
     if( node == NULL )
         return 0;
