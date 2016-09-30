@@ -192,6 +192,39 @@ void Exercise_04_31()
     printf( "</E-04-31>\n" );
 }
 
+void print_range_elements( BinaryTree tree, BinaryTreeNode node, void *lower, void *upper ) {
+    if( node == NULL || (*tree->compare_func)(lower, upper) > 0 )
+        return;
+
+    if( (*tree->compare_func)(node->element, lower) >= 0 ) {
+        print_range_elements( tree, node->left, lower, upper );
+    }
+    if( (*tree->compare_func)(node->element, lower) >= 0 
+        && (*tree->compare_func)(node->element, upper) <= 0 ){
+        tree->print_element_func( node->element );
+    }   
+    if( (*tree->compare_func)(node->element, upper) <= 0 ){
+        print_range_elements( tree, node->right, lower, upper );
+    }
+}
+
+void Exercise_04_32()
+{
+    printf( "<E-04-32>\n" );
+    
+    BinaryTree tree = create_binary_tree();
+    tree->print_element_func = &int_element_print;
+    BinaryTree_print( tree );
+
+    int k1 = 2;
+    int k2 = 5;
+    print_range_elements( tree, tree->root, &k1, &k2 );
+    printf( "\n" );
+    BinaryTree_dispose( &tree );
+    
+    printf( "</E-04-32>\n" );
+}
+
 int check_tree_samilarity( BinaryTreeNode node1, BinaryTreeNode node2 ) {
     if( node1 == NULL || node2 == NULL ) 
         return node1 == NULL && node2 == NULL;;
@@ -245,6 +278,7 @@ int main()
     Exercise_04_29();
     Exercise_04_30();
     Exercise_04_31();
+    Exercise_04_32();
     Exercise_04_41();
 
     return 0;
