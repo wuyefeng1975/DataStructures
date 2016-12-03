@@ -28,5 +28,11 @@ extern GraphEdge adjacency_graph_add_edge( AdjacencyGraph graph,
                                             GraphVertex vertex, 
                                             int adjacency_index, 
                                             int weight );
+extern GraphEdge adjacency_graph_add_edge_ex( AdjacencyGraph graph, 
+                                            int value_s, 
+                                            int value_d, 
+                                            int weight );
+static int* calculate_adjacency_graph_indegree( AdjacencyGraph graph ); 
+extern void adjacency_graph_topsort( AdjacencyGraph graph, int *sorted_indexs );
 
 #endif
