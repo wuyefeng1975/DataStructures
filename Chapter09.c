@@ -6,23 +6,73 @@
 #include "graph.h"
 
 void test_adjacency_graph();
+AdjacencyGraph init_adjacency_graph_1();
 void printf_adjacency_graph( AdjacencyGraph graph );
+
 void Exercise_09_03();
 
-AdjacencyGraph init_adjacency_graph_1();
-
+AdjacencyGraph init_adjacency_graph_2();
+void printf_vertex_value( int value );
+void Exercise_09_05();
 
 int main()
 {
     //test_adjacency_graph();
-    //AdjacencyGraph graph = init_adjacency_graph_1();
-    //
-
-    Exercise_09_03();
+    
+    //Exercise_09_03();
+    Exercise_09_05();
 
     return 0;
 }
 
+void Exercise_09_05() {
+    AdjacencyGraph graph = init_adjacency_graph_2();
+    TableEntry table = graph_create_table( graph->vertex_count );
+    
+    graph_get_shortest_path_unweight( graph, 'A', table );
+    for( int i = 0; i < graph->vertex_count; i++ ) {
+        graph_print_shortest_path( graph, table, i, &printf_vertex_value );
+        printf( "\n" );
+    }
+    
+    graph_get_shortest_path_dijkstra( graph, 'A', table );
+    for( int i = 0; i < graph->vertex_count; i++ ) {
+        graph_print_shortest_path( graph, table, i, &printf_vertex_value );
+        printf( "\n" );
+    }
+
+    graph_dispose_table( & table );
+    adjacency_graph_dispose( &graph );
+}
+
+void printf_vertex_value( int value ) {
+    printf( "%c", value );
+}
+
+AdjacencyGraph init_adjacency_graph_2(){
+    int vertex_count = 7;
+    AdjacencyGraph graph = adjacency_graph_create( vertex_count );
+    for( int i = 0; i < vertex_count; i++ ) {
+        GraphVertex v = graph->vertexs + i;
+        v->value = 'A' + i;
+        v->first_edge = NULL;
+    }
+    
+    adjacency_graph_add_edge_ex( graph, 'A', 'B', 5 );
+    adjacency_graph_add_edge_ex( graph, 'A', 'C', 3 );
+    adjacency_graph_add_edge_ex( graph, 'B', 'C', 2 );
+    adjacency_graph_add_edge_ex( graph, 'B', 'E', 3 );
+    adjacency_graph_add_edge_ex( graph, 'B', 'G', 1 );
+    adjacency_graph_add_edge_ex( graph, 'C', 'D', 7 );
+    adjacency_graph_add_edge_ex( graph, 'C', 'E', 7 );
+    adjacency_graph_add_edge_ex( graph, 'D', 'A', 2 );
+    adjacency_graph_add_edge_ex( graph, 'D', 'F', 6 );
+    adjacency_graph_add_edge_ex( graph, 'E', 'D', 2 );
+    adjacency_graph_add_edge_ex( graph, 'E', 'F', 1 );
+    adjacency_graph_add_edge_ex( graph, 'G', 'E', 1 );
+
+    return graph;
+}
 
 void Exercise_09_03() {
     AdjacencyGraph graph = init_adjacency_graph_1();
@@ -37,7 +87,7 @@ void Exercise_09_03() {
     printf( "\n" );
 
     FREE( sorted_indexs );
-    FREE( graph );
+    adjacency_graph_dispose( &graph );
 }
 
 AdjacencyGraph init_adjacency_graph_1(){
