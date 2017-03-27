@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "graph.h"
 
-void Exercise03();
+void Exercise_03();
 void printf_adjacency_graph( AdjacencyGraph graph );
 AdjacencyGraph init_adjacency_graph_1();
 void DFS( AdjacencyGraph graph, GraphVertex vertex, int *visited, int *ordered, int *orderedNum );
@@ -13,7 +13,7 @@ int main()
     return 0;
 }
 
-void Exercise_04_02_03() 
+void Exercise_03() 
 {
     AdjacencyGraph graph = init_adjacency_graph_1();
     int visited[7] = {0, 0, 0, 0, 0, 0, 0};

@@ -42,7 +42,7 @@ int quick_select(int *arr, int median_index, int left, int right)
 {
     int pivot = lomuto_partition( arr, left, right );
     if( pivot == median_index )
-        return arr[pivot];
+        return arr[median_index];
     if( pivot < median_index )
         return quick_select(arr, median_index, ++pivot, right);
     return quick_select(arr, median_index, left, --pivot);
