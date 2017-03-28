@@ -1,27 +1,47 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include "utility_integer.h"
 
 void test_merge_sort();
 void merge_sort(int *arr, int *temp_arr, int left, int right );
 void merge_array( int *arr, int *temp_arr, int left1, int left2, int right );
 
+void Exercise_01();
+int find_largest_index(int *arr, int left, int right);
+
 int main()
 {
     test_merge_sort();
+    Exercise_01();
 }
 
+void Exercise_01()
+{
+    int arr[12] = {};
+    int size = sizeof(arr)/sizeof(int);
+    fill_random_value_to_array(arr, size);
+
+    print_int_array( arr, size );
+    printf("Max value index is: %d\n", find_largest_index(arr, 0, size - 1));
+}
+
+int find_largest_index(int *arr, int left, int right)
+{
+    if( left == right )
+        return left;
+    
+    int center = (left + right) / 2 + 1;
+    int l_largest = find_largest_index(arr, left, center - 1);
+    int r_largest = find_largest_index(arr, center, right);
+    return arr[l_largest] >= arr[r_largest] ? l_largest : r_largest;
+}
 
 void test_merge_sort()
 {
-    int arr[11] = {};
-    int temp_arr[11] = {};
+    int arr[12] = {};
+    int temp_arr[12] = {};
     int size = sizeof(arr)/sizeof(int);
 
-    srand((unsigned)time(NULL));
-    for( int i = 0; i < size; i++ )
-        arr[i] = random_integer(1, 10 * size);
+    fill_random_value_to_array(arr, size);
 
     print_int_array( arr, size );
     merge_sort( arr, temp_arr, 0, size - 1 );
