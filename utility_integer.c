@@ -29,3 +29,10 @@ void swap_int_value(int *value1, int *value2)
     *value1 = *value2;
     *value2 = temp;
 }
+
+void fill_random_value_to_array(int *arr, int size)
+{
+    srand((unsigned)time(NULL));
+    for( int i = 0; i < size; i++ )
+        arr[i] = random_integer(1, 10 * size);
+}
